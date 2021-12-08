@@ -10,27 +10,27 @@ const templates = {
         render: function(data, response){
             let cover = ['https://cdn.pixabay.com/photo/2012/12/17/19/14/keyboard-70506_960_720.jpg','https://cdn.pixabay.com/photo/2020/03/28/16/03/dog-4977599_960_720.jpg','https://cdn.pixabay.com/photo/2016/11/23/14/45/coding-1853305_960_720.jpg'];
             
-            let hasWeather = setTimeout(getWeather, 100);
-            let maxCount = 10;
-            function getWeather(){
-                if(window['weather']) {
-                    document.querySelector('.loc').innerHTML = `<div>
-                        ${window['weather'].name} ${window['weather'].main.temp}
-                    </div>`;
-                    clearTimeout(hasWeather);
-                } else {
-                    if(maxCount < 0) clearTimeout(hasWeather);
-                    else maxCount--;
-                    setTimeout(getWeather, 100);
-                }
-            }
+            // let hasWeather = setTimeout(getWeather, 100);
+            // let maxCount = 10;
+            // function getWeather(){
+            //     if(window['weather']) {
+            //         document.querySelector('.loc').innerHTML = `<div>
+            //             ${window['weather'].name} ${window['weather'].main.temp}
+            //         </div>`;
+            //         clearTimeout(hasWeather);
+            //     } else {
+            //         if(maxCount < 0) clearTimeout(hasWeather);
+            //         else maxCount--;
+            //         setTimeout(getWeather, 100);
+            //     }
+            // }
 
             return `
                 <section page="${response}" style="background-image: url(${cover[parseInt(Math.random()*cover.length)]}); background-size: cover;">
-                <div class="home-weather">
+                <!--<div class="home-weather">
                     <div class="home-weather-title">오늘의 날씨</div>
                     <div class="loc"></div>
-                </div>
+                </div>-->
                 <div class="intro">
                         <div class="profile">
                             <img class="profile-avatar" src="https://avatars.githubusercontent.com/u/71887242?v=4" alt="profile">
