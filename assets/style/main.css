@@ -704,9 +704,10 @@ button.btn:focus-within {
 .h6{
     user-select: none;
     font-weight: bold;
-    font-family: var(--ks-font-comfortaa);
+    font-family: var(--ks-font-noto-sans);
     white-space: pre-wrap;
     word-break: break-all;
+    text-transform: capitalize;
 }
 
 [page="resume"] .h1,
