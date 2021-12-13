@@ -24,8 +24,9 @@ const Router = (function () {
             const menuWrap = target.closest('.side-menu');
             const sibling = document.querySelector('#side-menu');
 
-            if (!menuWrap && !sibling && sibling.className !== 'show') return;
+            if (!menuWrap && sibling && sibling.className !== 'show') return;
 
+            if(sibling)
             models.handleSideMenu(menuWrap, sibling);
         }
 
