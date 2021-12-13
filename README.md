@@ -4,6 +4,15 @@ router test in pure javascript
 
 ## 사용법
 
+### 페이징처리 태그 지정
+
+```html
+<!-- index.html -->
+<main id="app"></main>
+```
+
+`main`태그에 `id`를 `app`으로 부여합니다. 벗어난 설정 시 에러를 발생시킬 수 있습니다.
+
 ### 페이지 설정
 
 변수명 `router`에 넣고자하는 페이지를 객체로 넣습니다. 빈 객체여야합니다.
