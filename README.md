@@ -8,10 +8,10 @@
 
 ```html
 <!-- v0.1.0 -->
-<script src="https://cdn.jsdelivr.net/gh/kkn1125/router@a68b194/src/core/core.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/kkn1125/router@v010/src/core/core.js" integrity="sha384-OzEJH1cHc5qA+NkORhcUCVHrE/kTInMCailvJggUiTMd8N5juIcpbKl6Ar7dbXOp" crossorigin="anonymous"></script>
 ```
 
-현재 버전은 `0.1.1`입니다.
+현재 버전은 `0.1.0`입니다.
 
 ### download 기본 시작
 
@@ -306,6 +306,11 @@ export default {
 이슈를 통해 버그나 제안사항을 올려주시면 감사하겠습니다. 불편하신 점 또한 이슈로 주시면 수정하겠습니다 :)
 
 전체 코드를 변경해서 사용법을 매번 고쳐가며 갱신 중 입니다. 많은 관심 부탁드립니다 🙇‍♂️
+
+### 자주 생기는 오류
+
+- `redefined` 문제가 생긴다면 `cdn`과 `import`가 겹쳐있지 않은지 확인바랍니다.
+- `replace` 및 `convert`관련 에러가 난다면 페이지 또는 서브페이지 모듈에서 `core.js`가 맞는 경로로 되어 있는지 확인바랍니다.
 
 ## 블로그
 
