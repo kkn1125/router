@@ -1,6 +1,6 @@
 'use strict';
-import {Router} from '../core/core.js'
-import layout from '../core/layout.js'
+import {Router, Layout} from '../core/core.js'
+// import layout from '../core/layout.js'
 
 import Home from '../../views/pages/home.js'
 import About from '../../views/pages/about.js'
@@ -16,11 +16,11 @@ Router.setPage('about', About);
 Router.setModulePage('nav', nav);
 Router.setModulePage('footer', footer);
 
-layout.module = {
+Layout.module = {
     nav, footer
 }
 
-layout.template(`
+Layout.template(`
     {{nav}}
     {{page}}
     {{footer}}
