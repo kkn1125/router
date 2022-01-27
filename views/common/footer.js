@@ -1,5 +1,5 @@
 'use strict';
-import {Router, App} from '../../src/core/busCore.js'
+import {Router, App} from '../../src/core/core.js'
 
 export default {
     title: 'footer',

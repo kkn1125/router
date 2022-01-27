@@ -1,10 +1,9 @@
 'use strict';
-import {Router, Layout} from '../core/busCore.js'
-// import layout from '../core/layout.js'
+import {Router, Layout} from '../core/core.js'
 
 import Home from '../../views/pages/home.js'
 import About from '../../views/pages/about.js'
-import Notfound from '../../views/pages/404.js'
+// import Notfound from '../../views/pages/404.js'
 
 import nav from '../../views/common/nav.js'
 import footer from '../../views/common/footer.js'
