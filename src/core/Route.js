@@ -58,6 +58,7 @@ export default (function (){
             } else {
                 current = location.hash;
             }
+            if(current == '') current = '#home';
             if(before == location.hash) return;
             this.renderView(current);
         }
@@ -91,7 +92,7 @@ export default (function (){
 
         this.renderView = function(name){
             this.clearView();
-            // console.log(parts.layout.template().setPage(parts.router[name]).convert())
+
             app.insertAdjacentHTML('beforeend', 
                 parts
                     .layout
