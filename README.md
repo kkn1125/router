@@ -1,167 +1,196 @@
-# router
+# Router
 
-router test in pure javascript
+순수 자바스크립트 라우터 테스트
 
 ## 사용법
 
-### 페이징처리 태그 지정
+### download 기본 시작
 
 ```html
-<!-- index.html -->
-<main id="app"></main>
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Insert style, script ... -->
+
+        <title>Route</title>
+    </head>
+
+    <body>
+        <div id="app"></div>
+
+        <!-- Insert scripts... -->
+        <script src="./src/script/main.js" type="module"></script>
+    </body>
+</html>
 ```
 
-`main`태그에 `id`를 `app`으로 부여합니다. 벗어난 설정 시 에러를 발생시킬 수 있습니다.
-
-### 페이지 설정
-
-변수명 `router`에 넣고자하는 페이지를 객체로 넣습니다. 빈 객체여야합니다.
-
-```javascript
-const router = {
-    home: {},
-    test: {},
-    about: {},
-    404: {}
-}
-```
-
-로직처리에서 각 속성들에 내용을 특정 내용이 덮어씌워지기 때문에 빈 객체로 지정합니다.
-
-### 뷰 페이지 html 파일 생성
-
-먼저 `pages`폴더를 생성하고 폴더 내에 만들고자하는 페이지를 `html`로 생성합니다. 예를 들어 `home`이라는 `router`속성을 만들었다면, `pages`폴더에 `home.html`으로 같은 이름을 가지도록 만듭니다.
-
-### 페이지에서 javascript 표현식 사용하기
-
-생성된 html을 화면에 보여주는 설정은 아래와 같습니다.
-
-```javascript
-const templates = {
-    home: {
-        render: function(data, response, motion, connect){
-            let arge = {
-                // 사용할 변수 설정
-            };
-
-            connect(args, response, motion);
-        }
-    },
-    // 다른 페이지들
-}
-```
-
-페이지 렌더 설정은 위의 형태로 설정되어야하며, `args`는 필수로 선언되어야합니다.
-
-선언되는 `args`의 역할은 `html`페이지에서 `${...}`를 사용할 수 있도록 해줍니다. 이때 변수를 전달하는 방법을 알려드리겠습니다. 변수의 전달은 `args`객체를 만들어 내부에 속성으로 전달하게됩니다. 사용은 `html`에서 `${...}`로 사용하고 `args`를 뺀 속성명만으로 사용합니다.
-
-```javascript
-const templates = {
-    home: {
-        render: function(data, response, motion, connect){
-            let arge = {
-                test: 123 // 사용할 변수 설정
-            };
-
-            connect(args, response, motion);
-        }
-    },
-}
-```
+### CDN 기본 시작
 
 ```html
-<!-- home.html -->
-<div>
-    전달받은 변수값 test: ${test}
-    <!-- 123이 출력됩니다. args.test (x) -->
-</div>
+<!DOCTYPE html>
+<html lang="ko">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <!-- Insert style, script ... -->
+
+        <title>Route</title>
+    </head>
+
+    <body>
+        <div id="app"></div>
+
+        <!-- Insert scripts... -->
+        <script src="/cdnPath"></script>
+        <script src="./main.js"></script>
+    </body>
+</html>
 ```
 
-아래는 페이지 렌더영역을 생성하는 예제입니다.
+`id`는 아무 값이나 괜찮습니다. `Route.js`에서 `init`할 때 설정합니다.
+
+### Route.js 사용
+
+현재 저장소를 다운받아 사용한다면 짜여진 파일 구조를 참고해서 사용하면 됩니다만 `CDN`을 사용하는 시점에서 설명하겠습니다.
+
+`Route.js`는 레이아웃과 라우터를 받아 사용합니다. 사용할 때 파일을 설정해야하는 영역은 두 가지 입니다.
+
+필요한 핵심 파일은 `core` 디렉토리 내의 파일입니다. `core.js`는 `Router`객체와 `Object`의 프로토타입 메서드가 설정되어 있습니다.
+
+### 파일 구조 예제
+
+> 예제일 뿐이며 편한 방법으로 파일 구조를 바꾸셔도 됩니다.
+
+**파일 구조**
+
+*project*  
+　└ **src**  
+　　└ routes  
+　　　└ router.js (`필수`)  
+　└ **views**  
+　　└ pages (Main page)  
+　　　└ home.js  
+　　　└ about.js  
+　　　└ 404.js  
+　　└ commons (Module page)  
+　　　└ nav.js  
+　　　└ footer.js  
+　└ **assets**  
+　　└ main.js  
+　└ **index.html**  (`필수`)
+
+설정하는 영역은 크게 세 가지입니다.
+
+1. `main.js` 에서 `Route` 초기화 실행
+1. `routes/router.js` 작성
+2. `pages/{pages.js[, about.js [, ...]]}` 페이지 작성
+
+### Rout 초기화
+
+`Route`, `router`, `layout`을 가져옵니다. 그리고 `layout`과 `router`는 초기화 옵션에 전달합니다.
 
 ```javascript
-const templates = {
-    home: {
-        render: function (data, response, motion, connect) {
-            let args = {
-                cover: ['https://cdn.pixabay.com/photo/2012/12/17/19/14/keyboard-70506_960_720.jpg', 'https://cdn.pixabay.com/photo/2020/03/28/16/03/dog-4977599_960_720.jpg', 'https://cdn.pixabay.com/photo/2016/11/23/14/45/coding-1853305_960_720.jpg'],
-            };
+// ./main.js
 
-            connect(args, response, motion);
-        }
-    },
-    test: {
-        render: async function (data, response, motion, connect) {
-            let args = {
-                test: 123
-            };
+import Route from '../../src/core/Route.js'
+import router from '../../src/routes/router.js'
+import layout from '../../src/core/layout.js'
 
-            connect(args, response, motion);
-        }
-    },
-    about: {
-        render: function (data, response, motion, connect) {
-            let args = {};
-
-            connect(args, response, motion);
-        }
-    }
-}
-```
-
-### 페이지 공통요소
-
-네비게이션이나 푸터등 공통되는 요소가 있을 때에는 `parts`폴더를 생성하고, 폴더 내에 `html`파일을 생성합니다. `parts`의 연결 구문 형태는 아래와 같습니다.
-
-```javascript
-const parts = {
-    paging: {
-        render: function (hash, connect) {
-            let args = {};
-
-            connect(args, hash);
-        }
-    },
-    // 더 많은 요소들
-}
-```
-
-아래는 예제 코드입니다.
-
-```javascript
-const parts = {
-    paging: {
-        render: function (hash, connect) {
-            let args = {};
-            connect(args, hash);
-        }
-    },
-    menu: {
-        render: function (hash, connect) {
-            let args = {};
-            connect(args, hash);
-        }
-    }
-};
-```
-
-### 설정 내용 실행
-
-내용의 실행은 아래와 같습니다. 위의 옵션을 모두 설정하셨다면 아래와 같이 초기화 메서드를 실행하면 됩니다.
-
-```javascript
-let routers = Router.init({
+Route.init({
+    el: '#app',
+    layout,
     router,
-    templates,
-    parts
-});
+})
 ```
+
+### routes 설정
+
+페이지와 모듈페이지 등록 방법은 아래와 같으며 부연 설명으로 `Router`의 메서드에 대해 알려드립니다.
+
+```javascript
+// ./src/routes/router.js
+
+'use strict';
+/**
+ * 기본 코어 가져오기
+ */
+import {Router} from '../core/core.js'
+import layout from '../core/layout.js'
+
+/**
+ * 페이지 가져오기
+ */
+import Home from '../../views/pages/home.js'
+import About from '../../views/pages/about.js'
+import Notfound from '../../views/pages/404.js'
+
+/**
+ * 모듈 가져오기 (페이지 공통)
+ */
+import nav from '../../views/common/nav.js'
+import footer from '../../views/common/footer.js'
+
+/**
+ * 페이지 등록
+ */
+Router.setPage('home', Home);
+Router.setPage('about', About);
+Router.setPage('404', Notfound);
+// 기본으로 내장된 404페이지가 있습니다.
+// 커스터마이징 하시려면 이렇게 덮어 쓰면 됩니다.
+
+/**
+ * 모듈 등록
+ */
+Router.setModulePage('nav', nav);
+Router.setModulePage('footer', footer);
+
+/**
+ * layout에 모듈 연결
+ */
+layout.module = {
+    nav, footer
+}
+
+/**
+ * page는 전환되는 페이지이므로 이름 달라도 자동으로 매칭
+ * nav와 footer는 모듈 등록에서 지정한 이름과 같아야 함
+ */
+layout.template(`
+    {{nav}}
+    {{page}}
+    {{footer}}
+`);
+
+/**
+ * 스프레드 표현식으로 Router를 넘김
+ */
+export default {
+    ...Router
+}
+```
+
+#### Router methods
+
+|구분|설명|인자|리턴|
+|---|---|---|---|
+|setPage|페이지 이름`(name)`과 정보`(page)`를 Router인스턴스로 만들어 Router에 등록|`name:string`, `page:object`|`void`|
+|setModulePage|모듈 페이지 이름과 정보를 Router인스턴스로 만들어 Router에 보호되도록 등록|`name:string`, `page:object`|`void`|
 
 ## 버그, 제안 등
 
 이슈를 통해 버그나 제안사항을 올려주시면 감사하겠습니다. 불편하신 점 또한 이슈로 주시면 수정하겠습니다 :)
 
+전체 코드를 변경해서 사용법을 매번 고쳐가며 갱신 중 입니다. 많은 관심 부탁드립니다 🙇‍♂️
+
 ## 블로그
 
 email <a href="mailto:chapet01@gmail.com">chapet01@gmail.com</a>
+
 [devkimson blog](https://kkn1125.github.io)

@@ -1,6 +1,7 @@
 'use strict';
+
 export default {
-    title: 'about',
+    title: '404',
     template: function() {
         return `
         <div class="main">

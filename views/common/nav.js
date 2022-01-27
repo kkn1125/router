@@ -1,15 +1,14 @@
 'use strict';
-import App from '../core/app.js';
-import Router from '../core/core.js'
+import {Router, App} from '../../src/core/core.js'
 
 export default {
     title: 'nav',
     navClass: 'gnb position-sticky bg-light us-none gnb-dark',
     navInnerClass: 'gnb-inner gnb-expand-md hide align-items-center',
     btnClass: 'btn btn-light text-gray fs-4',
-    menulist: Object.keys(Router).filter(x=>x!='home'),
+    menulist: ()=>Object.keys(Router).filter(x=>!x.match(/home|404/gm)),
     genList(){
-        return [...this.menulist].map(li=>`
+        return [...this.menulist()].map(li=>`
         <li>
             <a class="nav-link" href="#${li}">${li.toUpperCase()}</a>
         </li>

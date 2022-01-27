@@ -1,12 +1,11 @@
 'use strict';
-import App from '../core/app.js';
-import Router from '../core/core.js'
+import {Router, App} from '../../src/core/core.js'
 
 export default {
     title: 'footer',
-    menulist: Object.keys(Router).filter(x=>x!='home'),
+    menulist: ()=>Object.keys(Router).filter(x=>!x.match(/home|404/gm)),
     genList(){
-        return [...this.menulist].map(li=>`
+        return [...this.menulist()].map(li=>`
         <div><a href="#${li}" class="nav-link">${li.toUpperCase()}</a></div>
         `).join('');
     },
