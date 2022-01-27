@@ -4,6 +4,14 @@
 
 ## 사용법
 
+### CDN
+
+```html
+<script src="https://cdn.jsdelivr.net/gh/kkn1125/router@a68b194/src/core/core.js"></script>
+```
+
+현재 버전은 `0.1.0`입니다.
+
 ### download 기본 시작
 
 ```html
@@ -47,7 +55,6 @@
         <div id="app"></div>
 
         <!-- Insert scripts... -->
-        <script src="/cdnPath"></script>
         <script src="./main.js"></script>
     </body>
 </html>
@@ -70,6 +77,8 @@
 **파일 구조**
 
 *project*  
+　└ **core**  
+　　└ core.js (선택)  
 　└ **src**  
 　　└ routes  
 　　　└ router.js (`필수`)  
@@ -85,7 +94,7 @@
 　　└ main.js  
 　└ **index.html**  (`필수`)
 
-설정하는 영역은 크게 세 가지입니다.
+설정하는 영역은 크게 세 가지입니다. core디렉토리를 만드는 이유는 긴 주소를 여러 곳에 쓰기보다 다시 내보내기로 짧게 쓰기 위함입니다.
 
 1. `main.js` 에서 `Route` 초기화 실행
 1. `routes/router.js` 작성
@@ -98,13 +107,12 @@
 ```javascript
 // ./main.js
 
-import Route from '../../src/core/Route.js'
-import router from '../../src/routes/router.js'
-import layout from '../../src/core/layout.js'
+import {Router, Route, Layout} from './core/core.js'
+import router from './router.js'
 
 Route.init({
     el: '#app',
-    layout,
+    Layout,
     router,
 })
 ```
@@ -120,15 +128,13 @@ Route.init({
 /**
  * 기본 코어 가져오기
  */
-import {Router} from '../core/core.js'
-import layout from '../core/layout.js'
+import {Router, Layout} from './core/core.js'
 
 /**
  * 페이지 가져오기
  */
 import Home from '../../views/pages/home.js'
 import About from '../../views/pages/about.js'
-import Notfound from '../../views/pages/404.js'
 
 /**
  * 모듈 가져오기 (페이지 공통)
@@ -141,7 +147,7 @@ import footer from '../../views/common/footer.js'
  */
 Router.setPage('home', Home);
 Router.setPage('about', About);
-Router.setPage('404', Notfound);
+// Router.setPage('404', Notfound);
 // 기본으로 내장된 404페이지가 있습니다.
 // 커스터마이징 하시려면 이렇게 덮어 쓰면 됩니다.
 
@@ -154,7 +160,7 @@ Router.setModulePage('footer', footer);
 /**
  * layout에 모듈 연결
  */
-layout.module = {
+Layout.module = {
     nav, footer
 }
 
@@ -162,7 +168,7 @@ layout.module = {
  * page는 전환되는 페이지이므로 이름 달라도 자동으로 매칭
  * nav와 footer는 모듈 등록에서 지정한 이름과 같아야 함
  */
-layout.template(`
+Layout.template(`
     {{nav}}
     {{page}}
     {{footer}}
@@ -173,6 +179,117 @@ layout.template(`
  */
 export default {
     ...Router
+}
+```
+
+### page.js 기본 형태
+
+```javascript
+// home.js
+export default {
+    title: 'home', // Router 객체에 지정한 이름과 동일
+    module: {}, // 페이지에 모듈을 지정할 때
+    template: function() {
+        return `
+        <div>
+            ...
+        </div>
+        `
+    }
+}
+```
+
+기본적으로 페이지를 작성하는 포멧입니다. `title`, `module`, `template`은 약속된 속성이고, 속성을 변수로 사용하려면 아무 명칭이나 붙여서 `this['blah']`로 사용하면 됩니다.
+
+#### 페이지 함수 사요
+
+메서드를 등록하여 사용할 수도 있습니다.
+
+```javascript
+export default {
+    title: 'home',
+    module: {
+        homesub: Router['homesub']
+    },
+    capitalize(){ // this로 자신의 여러 속성을 참조하여 사용합니다.
+        return this.title.charAt(0).toUpperCase() + this.title.split('').slice(1).join('');
+    },
+    template: function() {
+        return `
+        <div>
+            test
+        </div>
+        `
+    }
+}
+```
+
+#### 서브페이지 모듈 사용
+
+주요 페이지에 서브페이지 모듈을 사용할 때는 아래와 같습니다.
+
+```javascript
+// home.js
+import {Router} from '../../core/core.js'
+import HomeSub from './home.sub.js'
+
+// parent 지정은 home.sub.js에서 this.parent로 해쉬 주소 사용 가능하게 합니다.
+HomeSub.parent = '#home';
+// Router에 페이지를 등록합니다.
+Router.setPage('homesub', HomeSub);
+
+export default {
+    title: 'home',
+    module: {
+        homesub: Router['homesub']
+    },
+    template: function() {
+        return `
+        <div>
+            test
+            ${this.module.homesub.page.template()}
+        </div>
+        `
+    }
+}
+```
+
+`Router`에 등록된 `Router`객체에서 페이지 정보를 참조하려면 `page`프로퍼티로 사용해야 합니다.
+
+서브페이지 모듈 부모 페이지처럼 `module`속성를 가질 수 있습니다. `module`속성을 사용한 이유는 한 페이지 내에서 사이드 바나 순차적으로 타고 들어가는 형태의 페이지가 있을 때 쉽고 오고 갈 수 있도록 하기 위함입니다.
+
+```javascript
+// home.sub.js
+export default {
+    title: 'homesub',
+    template: function() {
+        return `
+        <div>
+            Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam consequatur, nam nemo voluptatem illum voluptates eveniet explicabo, labore sit, repudiandae a et fuga quo laboriosam at? Necessitatibus expedita harum distinctio.
+            <a href="${this.parent}">Go parent</a>
+        </div>
+        `
+    }
+}
+```
+
+만일 다른 페이지에서 특정 모듈이나 주요페이지의 변수를 공유해야할 때는 아래와 같이 `Router`를 가져와 사용합니다.
+
+```javascript
+// other.sub.js
+import {Router} from '../../core/core.js'
+
+export default {
+    template(){
+        return `
+            <p>
+                this is subpage module.
+            </p>
+            ${Router.nav.page.menulist()}
+            ${Router.home.brand}
+            ...
+        `
+    }
 }
 ```
 
@@ -191,6 +308,6 @@ export default {
 
 ## 블로그
 
-email <a href="mailto:chapet01@gmail.com">chapet01@gmail.com</a>
+Email <a href="mailto:chapet01@gmail.com">chapet01@gmail.com</a>
 
 [devkimson blog](https://kkn1125.github.io)
