@@ -1,5 +1,5 @@
 'use strict';
-import {Router, Layout} from '../core/core.js'
+import {Router, Layout} from '../core/busCore.js'
 // import layout from '../core/layout.js'
 
 import Home from '../../views/pages/home.js'
