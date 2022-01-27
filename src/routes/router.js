@@ -26,6 +26,8 @@ Layout.template(`
     {{footer}}
 `);
 
+console.log(Layout.originView)
+
 export default {
     ...Router
 }
