@@ -7,9 +7,6 @@
 ### CDN
 
 ```html
-<!-- v0.1.1 -->
-<script src="https://cdn.jsdelivr.net/gh/kkn1125/router@d4be05a/src/core/core.js"></script>
-
 <!-- v0.1.0 -->
 <script src="https://cdn.jsdelivr.net/gh/kkn1125/router@a68b194/src/core/core.js"></script>
 ```

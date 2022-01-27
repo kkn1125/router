@@ -59,7 +59,6 @@ const watch = (function(){
 if(!Object.prototype.hasOwnProperty('convert'))
 Object.defineProperty(Object.prototype, 'convert', {
     value: function (){
-        console.trace(1)
         let root = this;
         this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
             if(b=='page') b = root.getPage;
@@ -69,14 +68,18 @@ Object.defineProperty(Object.prototype, 'convert', {
             else return a;
         });
         return this;
-    }
+    },
+    enumerable: true,
+    configurable: true
 });
 
 if(!Object.prototype.hasOwnProperty('removeSign'))
 Object.defineProperty(Object.prototype, 'removeSign', {
     value: function (){
         return this.replace(/[\.\-\_]+/gm,'');
-    }
+    },
+    enumerable: true,
+    configurable: true
 });
 
 function Router(name, path, page){
