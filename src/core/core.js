@@ -1,7 +1,7 @@
 'use strict';
 const App = {
     brand: 'Router',
-    version: '0.1.1'
+    version: '0.1.0'
 }
 
 const base404 = {
