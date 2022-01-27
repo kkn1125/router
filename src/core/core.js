@@ -231,8 +231,8 @@ const Layout = {
 }
 
 export {
-    Router as router,
-    App as app,
-    Route as route,
-    Layout as layout,
+    Router,
+    App,
+    Route,
+    Layout,
 }
