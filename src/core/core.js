@@ -60,8 +60,6 @@ if(!Object.prototype.hasOwnProperty('convert'))
 Object.defineProperty(Object.prototype, 'convert', {
     value: function (){
         let root = this;
-        console.log(this)
-        console.log(this.originView)
         this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
             if(b=='page') b = root.getPage;
             if(Router[b]) {
@@ -169,6 +167,7 @@ const Route = (function (){
             views.renderView(name);
         }
     }
+    
     function View(){
         let parts = null;
         let app = null;
@@ -193,6 +192,7 @@ const Route = (function (){
                     .render());
         }
     }
+
     return {
         init(options){
             const parts = {
