@@ -4,7 +4,7 @@ import {Router} from '../../src/core/core.js'
 import HomeSub from './home.sub.js'
 
 HomeSub.parent = '#home';
-Router.homesub = new Router('homesub', '', HomeSub);
+Router.setPage('homesub', HomeSub);
 
 export default {
     title: 'home',

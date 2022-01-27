@@ -54,27 +54,30 @@ const watch = (function(){
             console.log(`%c${e.message}`, 'color: #90ffbc', 'color: #4aff92');
         }
     })
+})();
 
-    Object.defineProperty(Object.prototype, 'convert', {
-        value: function (){
-            let root = this;
-            this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
-                if(b=='page') b = root.getPage;
-                if(Router[b]) {
-                    return Router[b].page.template();
-                }
-                else return a;
-            });
-            return this;
-        }
-    });
-    
-    Object.defineProperty(Object.prototype, 'removeSign', {
-        value: function (){
-            return this.replace(/[\.\-\_]+/gm,'');
-        }
-    });
-})()
+if(!Object.prototype.hasOwnProperty('convert'))
+Object.defineProperty(Object.prototype, 'convert', {
+    value: function (){
+        console.trace(1)
+        let root = this;
+        this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
+            if(b=='page') b = root.getPage;
+            if(Router[b]) {
+                return Router[b].page.template();
+            }
+            else return a;
+        });
+        return this;
+    }
+});
+
+if(!Object.prototype.hasOwnProperty('removeSign'))
+Object.defineProperty(Object.prototype, 'removeSign', {
+    value: function (){
+        return this.replace(/[\.\-\_]+/gm,'');
+    }
+});
 
 function Router(name, path, page){
     this.name = name;
