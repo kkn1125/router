@@ -33,6 +33,49 @@ const base404 = {
     }
 }
 
+const watch = (function(){
+    fetch('https://cdn.jsdelivr.net/gh/kkn1125/router@latest/src/core/core.js')
+    .then(function (res){
+        return res.text();
+    })
+    .then(function (data){
+        let version = data.match(/version\s*\:\s*\'([\s\S]+?)\'/im)[1];
+        let strUse = App.version.replace(/[^0-9]+/gm, '');
+        let strRepo = version.replace(/[^0-9]+/gm, '');
+        let useVer = parseInt(strUse);
+        let repoVer = parseInt(strRepo);
+        try{
+            if(useVer >= repoVer){
+                throw new Error(`[Router Note] 현재 최신버전입니다. %cver ${App.version}`);
+            } else {
+                throw new Error(`[Router Note] 최신 버전이 새로 나왔습니다. 업데이트가 필요합니다. https://github.com/kkn1125/router\n%ccurrent Ver ${App.version} >> new ver ${version}`)
+            }
+        } catch(e){
+            console.log(`%c${e.message}`, 'color: #90ffbc', 'color: #4aff92');
+        }
+    })
+
+    Object.defineProperty(Object.prototype, 'convert', {
+        value: function (){
+            let root = this;
+            this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
+                if(b=='page') b = root.getPage;
+                if(Router[b]) {
+                    return Router[b].page.template();
+                }
+                else return a;
+            });
+            return this;
+        }
+    });
+    
+    Object.defineProperty(Object.prototype, 'removeSign', {
+        value: function (){
+            return this.replace(/[\.\-\_]+/gm,'');
+        }
+    });
+})()
+
 function Router(name, path, page){
     this.name = name;
     this.path = path;
@@ -48,26 +91,6 @@ Router.__proto__.setModulePage = function(name, page){
 }
 
 Router.setPage('404', base404);
-
-Object.defineProperty(Object.prototype, 'convert', {
-    value: function (){
-        let root = this;
-        this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
-            if(b=='page') b = root.getPage;
-            if(Router[b]) {
-                return Router[b].page.template();
-            }
-            else return a;
-        });
-        return this;
-    }
-});
-
-Object.defineProperty(Object.prototype, 'removeSign', {
-    value: function (){
-        return this.replace(/[\.\-\_]+/gm,'');
-    }
-});
 
 const Route = (function (){
     function Controller(){
@@ -197,29 +220,6 @@ const Layout = {
         return this.convertedView;
     }
 }
-
-const watch = (function(){
-    fetch('https://cdn.jsdelivr.net/gh/kkn1125/router@latest/src/core/core.js')
-    .then(function (res){
-        return res.text();
-    })
-    .then(function (data){
-        let version = data.match(/version\s*\:\s*\'([\s\S]+?)\'/im)[1];
-        let strUse = App.version.replace(/[^0-9]+/gm, '');
-        let strRepo = version.replace(/[^0-9]+/gm, '');
-        let useVer = parseInt(strUse);
-        let repoVer = parseInt(strRepo);
-        try{
-            if(useVer >= repoVer){
-                throw new Error(`[Router Note] 현재 최신버전입니다. %cver ${App.version}`);
-            } else {
-                throw new Error(`[Router Note] 최신 버전이 새로 나왔습니다. 업데이트가 필요합니다. https://github.com/kkn1125/router\n%ccurrent Ver ${App.version} >> new ver ${version}`)
-            }
-        } catch(e){
-            console.log(`%c${e.message}`, 'color: #90ffbc', 'color: #4aff92');
-        }
-    })
-})()
 
 export {
     Router,
