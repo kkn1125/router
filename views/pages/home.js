@@ -1,6 +1,6 @@
 'use strict';
 
-import {Router} from '../../src/core/core.js'
+import {Router} from '../../src/core/busCore.js'
 import HomeSub from './home.sub.js'
 
 HomeSub.parent = '#home';

@@ -126,6 +126,7 @@ const Route = (function (){
             models.handleState(ev);
         }
     }
+
     function Model(){
         let current = null;
         let views = null;
@@ -230,8 +231,8 @@ const Layout = {
 }
 
 export {
-    Router,
-    App,
-    Route,
-    Layout,
+    Router as router,
+    App as app,
+    Route as route,
+    Layout as layout,
 }

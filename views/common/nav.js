@@ -1,5 +1,5 @@
 'use strict';
-import {Router, App} from '../../src/core/core.js'
+import {Router, App} from '../../src/core/busCore.js'
 
 export default {
     title: 'nav',
