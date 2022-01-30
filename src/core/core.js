@@ -34,7 +34,7 @@ const base404 = {
 }
 
 const watch = (function(){
-    fetch('https://cdn.jsdelivr.net/gh/kkn1125/router@latest/src/core/core.js')
+    fetch('https://cdn.jsdelivr.net/gh/kkn1125/router@vlatest/src/core/core.js')
     .then(function (res){
         return res.text();
     })
