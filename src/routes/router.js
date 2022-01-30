@@ -1,4 +1,6 @@
 'use strict';
+
+// import {Router, Layout} from '../core/coreBus.js'
 import {Router, Layout} from '../core/core.js'
 
 import Home from '../../views/pages/home.js'

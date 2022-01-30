@@ -1,4 +1,5 @@
 'use strict';
+// import {Router, App} from '../../src/core/coreBus.js'
 import {Router, App} from '../../src/core/core.js'
 
 export default {

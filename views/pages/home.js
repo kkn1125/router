@@ -1,10 +1,10 @@
 'use strict';
 
-import {Router} from '../../src/core/core.js'
+// import {Router, App} from '../../src/core/coreBus.js'
+import {Router, App} from '../../src/core/core.js'
 import HomeSub from './home.sub.js'
 
-HomeSub.parent = '#home';
-Router.setPage('homesub', HomeSub);
+Router.setSubPage('homesub', HomeSub, Router['home'])
 
 export default {
     title: 'home',
@@ -20,7 +20,7 @@ export default {
                         <span class="h1">${this.title}</span>
                     </div>
                     <p>
-                        <a href="#home">home</a>
+                        <a href="${this.module.homesub.path}">${this.module.homesub.name}</a>
                         <a href="#about">about</a>
                         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis accusamus nulla incidunt suscipit ipsam quis, vel in alias rerum, expedita reprehenderit est iusto sint, unde voluptatibus atque dolorum quam possimus?
                     </p>

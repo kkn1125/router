@@ -1,7 +1,7 @@
 'use strict';
 const App = {
     brand: 'Router',
-    version: '0.1.0'
+    version: '0.1.1'
 }
 
 const base404 = {
@@ -60,13 +60,18 @@ if(!Object.prototype.hasOwnProperty('convert'))
 Object.defineProperty(Object.prototype, 'convert', {
     value: function (){
         let root = this;
-        this.convertedView = this.originView.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
-            if(b=='page') b = root.getPage;
-            if(Router[b]) {
-                return Router[b].page.template();
-            }
-            else return a;
-        });
+        this.originView.split('\n').map(x=>{
+            this.convertedView.push(x.replace(/\{\{([\s\S]+?)\}\}/gm, function (a,b) {
+                if(b=='page') b = root.getPage;
+                if(Router[b]) {
+                    root[b] = Router[b].page.template().trim();
+                    return Router[b].page.template().trim();
+                } else {
+                    root[a] = a;
+                    return a;
+                }
+            }).trim());
+        })
         return this;
     },
     enumerable: true,
@@ -88,11 +93,29 @@ function Router(name, path, page){
     this.page = page;
 }
 
+// 0.1.1
 Router.__proto__.setPage = function(name, page){
-    Router[name] = new Router(name, '', page);
+    page.created?.call(page);
+    Router[name] = new Router(name, `#${name}`, page);
+    if(Router[name].page.module){ // 서브페이지 모듈 부모 자동 등록
+        const modules = Object.keys(Router[name].page.module);
+        if(modules.length>0){
+            modules.forEach(key=>{
+                Router[name].page.module[key].page.parent = Router[name];
+            });
+        }
+    }
+}
+
+// 0.1.1
+Router.__proto__.setSubPage = function(name, page){
+    page.created?.call(page);
+    Router[name] = new Router(name, `#${name}`, page);
+    return Router[name];
 }
 
 Router.__proto__.setModulePage = function(name, page){
+    page.created?.call(page);
     Router.__proto__[name] = new Router(name, '', page);
 }
 
@@ -182,13 +205,13 @@ const Route = (function (){
 
         this.renderView = function(name){
             this.clearView();
-
             app.insertAdjacentHTML('beforeend', 
                 parts
                     .Layout
                     .template()
                     .setPage(parts.router[name], parts.router)
                     .convert()
+                    .setLocalStyle()
                     .render());
         }
     }
@@ -213,8 +236,28 @@ const Route = (function (){
 const Layout = {
     module: {},
     originView: null,
-    convertedView: null,
+    convertedView: [],
+    setLocalStyle: function (){
+        const rootPage = Router[this.getPage].page;
+        let vmBody = new DOMParser().parseFromString(this[this.getPage], 'text/html').body;
+        let idx = this.convertedView.indexOf(this[this.getPage]);
+
+        if(rootPage.style)
+        Object.keys(rootPage.style)?.forEach(name => {
+            const styles = Object.entries(rootPage.style[name]);
+            styles.forEach(([key, val])=>{
+                vmBody.querySelectorAll(name).forEach(el => {
+                    el.style.setProperty(key, val);
+                });
+            });
+        });
+        
+        this.convertedView[idx] = vmBody.innerHTML;
+
+        return this;
+    },
     setPage: function(page, router){
+        this.convertedView = [];
         if(!page) page = router['404'];
         Route[page.name] = page;
         this.getPage = page.name;
@@ -226,7 +269,10 @@ const Layout = {
         return this;
     },
     render(){
-        return this.convertedView;
+        const rootPage = Router[this.getPage].page;
+        rootPage.mounted?.call(rootPage);
+
+        return this.convertedView.join('');
     }
 }
 

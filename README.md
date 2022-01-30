@@ -2,16 +2,35 @@
 
 순수 자바스크립트 라우터 테스트
 
+## update list
+
+1. style : render 시점에 로컬 스타일 지정
+2. created : 렌더 되기 전에 설정
+3. mounted : 렌더 된 후에 설정
+4. setSubPage : 부모 페이지의 하위 페이지 등록 (name, page)
+5. setPage : 기존 방식에서 하위 모듈 페이지의 parent 자동 등록
+
+## todo
+
+1. setPage & setPageModule 메서드 -> 타이틀, hash네임 구분 하기
+   - ex) setPage(hashname, title, page)
+   - hashname = 링크에 달리는 해시 명
+   - title = 페이지 타이틀
+   - page = 그대로
+
 ## 사용법
 
 ### CDN
 
-```html
-<!-- v0.1.0 -->
-<script src="https://cdn.jsdelivr.net/gh/kkn1125/router@v010/src/core/core.js" integrity="sha384-OzEJH1cHc5qA+NkORhcUCVHrE/kTInMCailvJggUiTMd8N5juIcpbKl6Ar7dbXOp" crossorigin="anonymous"></script>
+```javascript
+/** v0.1.1 */
+import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v011/src/core/core.js'
+
+/** v0.1.0 */
+import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v010/src/core/core.js'
 ```
 
-현재 버전은 `0.1.0`입니다.
+현재 버전은 `0.1.1`입니다.
 
 ### download 기본 시작
 
@@ -30,33 +49,8 @@
 
     <body>
         <div id="app"></div>
-
         <!-- Insert scripts... -->
         <script src="./src/script/main.js" type="module"></script>
-    </body>
-</html>
-```
-
-### CDN 기본 시작
-
-```html
-<!DOCTYPE html>
-<html lang="ko">
-    <head>
-        <meta charset="UTF-8">
-        <meta http-equiv="X-UA-Compatible" content="IE=edge">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        <!-- Insert style, script ... -->
-
-        <title>Route</title>
-    </head>
-
-    <body>
-        <div id="app"></div>
-
-        <!-- Insert scripts... -->
-        <script src="./main.js"></script>
     </body>
 </html>
 ```
@@ -190,6 +184,19 @@ export default {
 export default {
     title: 'home', // Router 객체에 지정한 이름과 동일
     module: {}, // 페이지에 모듈을 지정할 때
+    style: {
+        // 전역이 아닌 로컬 스타일을 지정합니다. 작성은 다음과 같습니다.
+        body: {
+            'background-color': 'black',
+            color: 'white',
+        }
+    },
+    created() {
+        // 아직 렌더링이 되지 않은 상태입니다.
+    },
+    mounted() {
+        // 렌더링이 된 상태입니다.
+    },
     template: function() {
         return `
         <div>
@@ -311,6 +318,7 @@ export default {
 
 - `redefined` 문제가 생긴다면 `cdn`과 `import`가 겹쳐있지 않은지 확인바랍니다.
 - `replace` 및 `convert`관련 에러가 난다면 페이지 또는 서브페이지 모듈에서 `core.js`가 맞는 경로로 되어 있는지 확인바랍니다.
+- `allorigins` 관련 문제는 대부분 포트번호가 `8080`이 아닐 때 발생합니다. 포트번호를 `8080`으로 맞추어 테스트 하시기 바랍니다.
 
 ## 블로그
 
