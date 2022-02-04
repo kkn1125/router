@@ -1,8 +1,14 @@
 'use strict';
+import {Router} from '../../src/core/core.js'
+
+import aboutsub from './about.sub.js'
+
+Router.setSubPage('aboutsub','aboutsub',aboutsub);
 
 export default {
     title: 'about',
     template: function() {
+        console.log(this.module)
         return `
         <div class="main">
             <main>

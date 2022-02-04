@@ -4,14 +4,18 @@
 import {Router, App} from '../../src/core/core.js'
 import HomeSub from './home.sub.js'
 
-Router.setSubPage('homesub', HomeSub, Router['home'])
+Router.setSubPage('homesub-test', 'home.sub', HomeSub);
 
 export default {
     title: 'home',
-    module: {
-        homesub: Router['homesub']
+    created(){
+        console.log('test')
+    },
+    mounted(){
+        console.log(2);
     },
     template: function() {
+        console.log(this.module)
         return `
         <div class="main">
             <main>
@@ -20,7 +24,7 @@ export default {
                         <span class="h1">${this.title}</span>
                     </div>
                     <p>
-                        <a href="${this.module.homesub.path}">${this.module.homesub.name}</a>
+                        <a href="${this.module.$home_sub.path}">${this.module.$home_sub.convertedName}</a>
                         <a href="#about">about</a>
                         Lorem, ipsum dolor sit amet consectetur adipisicing elit. Nobis accusamus nulla incidunt suscipit ipsam quis, vel in alias rerum, expedita reprehenderit est iusto sint, unde voluptatibus atque dolorum quam possimus?
                     </p>

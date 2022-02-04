@@ -1,5 +1,5 @@
 export default {
-    title: 'homesub',
+    title: 'aboutsub',
     template: function (){
         return `
             <div class="main">

@@ -4,6 +4,72 @@
 
 ## update list
 
+### v0.2.0
+
+1. setPage, setSubPage 메서드 수정 (이전 버전 호환 x)
+2. loadModules 메서드 추가 (이전 버전 호환 x)
+3. page path 생성 방식 변경
+4. subPage 등록 시 해당 subPage에서 origin속성 추가 (자기 자신 Router 참조 가능)
+5. Router속성 기존 name, path, page에서 convertedPage 속성 추가
+6. hash path 공백, ".", "_", "-" 등 "-"로 변환
+
+#### Detail
+
+> setPage, setSubPage, loadModules
+
+|name|params|desc|return|
+|---|---|---|---|
+|setPage|pageName:{string}, pathName:{string}, page:{object}|메인 페이지 설정, origin 자동 생성 (hash path 생성)|{Router}|
+|setSubPage|pageName:{string}, pathName:{string}, page:{object}|하위 페이지 설정, parent와 origin 자동 연결, 생성 (hash path 생성)|{Router}|
+|loadModules|-|모듈 자동 로드, this.module['pagename']으로 사용, 서브페이지 등록 시 공백, ".", "-", "_"이 중간에 있어도 모든 텍스트 붙여서 호출|{LoadModules}|
+
+#### subPage template example
+
+```javascript
+// home.js
+import {Router} from './core/core.js'
+
+import homesub from './views/pages/home.sub.js'
+
+Router.setSubPage('this is page name', 'home.sub', homesub);
+
+export default {
+    module: Router.loadModules,
+    template(){
+        return `
+            <div>
+                <div>${this.origin.name}</div>
+                <p>
+                    ${this.module.homesub.page.path}
+                    Lorem, ipsum dolor sit amet consectetur adipisicing elit. Architecto temporibus tenetur optio sequi earum expedita saepe! Illo iure distinctio, magnam eligendi atque debitis beatae excepturi libero nostrum placeat expedita laboriosam!
+                </p>
+            </div>
+        `
+    }
+}
+```
+
+```javascript
+// home.sub.js
+export default {
+    // title: 'test', // v0.2.0부터 없어도 무방합니다.
+    template(){
+        return `
+            <div>
+                <span class="h3">${this.origin.name}</span>
+                <p>
+                    Lorem ipsum dolor sit, amet consectetur adipisicing elit. Sit delectus laboriosam reiciendis consequatur, velit id dolore, dicta eligendi numquam quam quae incidunt praesentium veritatis sapiente molestiae ipsam fugit, nam porro.
+                </p>
+
+                <a href="${this.origin.parent.path}">이전으로</a>
+            </div>
+        `;
+    }
+}
+```
+
+### v0.1.1
+
 1. style : render 시점에 로컬 스타일 지정
 2. created : 렌더 되기 전에 설정
 3. mounted : 렌더 된 후에 설정
@@ -23,6 +89,9 @@
 ### CDN
 
 ```javascript
+/** v0.2.0 */
+import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v020/src/core/core.js'
+
 /** v0.1.1 */
 import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v011/src/core/core.js'
 
@@ -140,8 +209,8 @@ import footer from '../../views/common/footer.js'
 /**
  * 페이지 등록
  */
-Router.setPage('home', Home);
-Router.setPage('about', About);
+Router.setPage('pageName', 'home' Home);
+Router.setPage('aboutPage', 'about', About);
 // Router.setPage('404', Notfound);
 // 기본으로 내장된 404페이지가 있습니다.
 // 커스터마이징 하시려면 이렇게 덮어 쓰면 됩니다.
@@ -183,8 +252,8 @@ export default {
 // home.js
 export default {
     title: 'home', // Router 객체에 지정한 이름과 동일
-    module: {}, // 페이지에 모듈을 지정할 때
-    style: {
+    // module: {}, // 페이지에 모듈을 지정할 때 // v0.1.1 이전
+    style: { // 작성하면 렌더링 시 자동 적용
         // 전역이 아닌 로컬 스타일을 지정합니다. 작성은 다음과 같습니다.
         body: {
             'background-color': 'black',
@@ -214,6 +283,13 @@ export default {
 메서드를 등록하여 사용할 수도 있습니다.
 
 ```javascript
+import {Router} from './core/core.js'
+
+import homesub from './views/pages/home.homesub.js'
+
+Router.setPage('homesub', 'home-sub', homesub);
+// name=homesub, <a href="#home-sub"></a>
+
 export default {
     title: 'home',
     module: {
@@ -234,6 +310,8 @@ export default {
 
 #### 서브페이지 모듈 사용
 
+\* v0.2.0이후 자동 모듈 등록을 위해 부모 페이지 hashPath가 포함되어 이름을 작성해야합니다. 예를 들어 상위 페이지가 `home`이라면 `home.sub`, `home_sub`, `home-sub`, `home sub`, `homesub`로 지정해야합니다.
+
 주요 페이지에 서브페이지 모듈을 사용할 때는 아래와 같습니다.
 
 ```javascript
@@ -241,21 +319,30 @@ export default {
 import {Router} from '../../core/core.js'
 import HomeSub from './home.sub.js'
 
-// parent 지정은 home.sub.js에서 this.parent로 해쉬 주소 사용 가능하게 합니다.
-HomeSub.parent = '#home';
-// Router에 페이지를 등록합니다.
-Router.setPage('homesub', HomeSub);
+/**
+ * parent 지정은 home.sub.js에서 this.parent로 해쉬 주소 사용
+ * 가능하게 합니다.
+ * 
+ * HomeSub.parent = '#home'; // 0.1.1부터 setSubPage메서드에
+ * 자동 등록
+ * 
+ * Router에 페이지를 등록합니다.
+ */
+Router.setSubPage('하위 페이지', 'home-sub', HomeSub);
 
+/**
+ * home-sub 는 $home_sub로 이름이 치환되어 아래 클로저 내에서
+ * this.module.$home_sub 로 사용가능합니다.
+ */
 export default {
     title: 'home',
-    module: {
-        homesub: Router['homesub']
-    },
     template: function() {
         return `
         <div>
             test
-            ${this.module.homesub.page.template()}
+            ${this.module.$home_sub.page.template()}
+            띄어쓰기, . , -, _ 등은 모두 언더바(_)로 치환됩니다.
+            점을 찍어 사용하기 편하게 하기 위함입니다.
         </div>
         `
     }
@@ -264,7 +351,11 @@ export default {
 
 `Router`에 등록된 `Router`객체에서 페이지 정보를 참조하려면 `page`프로퍼티로 사용해야 합니다.
 
-서브페이지 모듈 부모 페이지처럼 `module`속성를 가질 수 있습니다. `module`속성을 사용한 이유는 한 페이지 내에서 사이드 바나 순차적으로 타고 들어가는 형태의 페이지가 있을 때 쉽고 오고 갈 수 있도록 하기 위함입니다.
+v0.2.0이후로 `setPage`로 페이지 등록 시점에 설정한 `hashPath`를 기준으로 `subPage`의 `hashPath`를 매칭하여 자동 등록합니다.
+
+<del>서브페이지 모듈 부모 페이지처럼 `module`속성를 가질 수 있습니다. `module`속성을 사용한 이유는 한 페이지 내에서 사이드 바나 순차적으로 타고 들어가는 형태의 페이지가 있을 때 쉽고 오고 갈 수 있도록 하기 위함입니다.</del>
+
+> \* v0.2.0부터는 module에 등록했던 파일들을 입력하지 않고 Router.loadModules를 속성값으로 주면 자동으로 
 
 ```javascript
 // home.sub.js
@@ -274,6 +365,11 @@ export default {
         return `
         <div>
             Lorem, ipsum dolor sit amet consectetur adipisicing elit. Quibusdam consequatur, nam nemo voluptatem illum voluptates eveniet explicabo, labore sit, repudiandae a et fuga quo laboriosam at? Necessitatibus expedita harum distinctio.
+
+            ${this.origin.page} origin은 서브모듈 페이지에서 this를 사용할 때 등록된 자기 자신 Router를 사용할 수 있게 합니다.
+
+            this.origin은 Router[homesub] 과 같습니다.
+
             <a href="${this.parent}">Go parent</a>
         </div>
         `
@@ -303,10 +399,45 @@ export default {
 
 #### Router methods
 
-|구분|설명|인자|리턴|
-|---|---|---|---|
-|setPage|페이지 이름`(name)`과 정보`(page)`를 Router인스턴스로 만들어 Router에 등록|`name:string`, `page:object`|`void`|
-|setModulePage|모듈 페이지 이름과 정보를 Router인스턴스로 만들어 Router에 보호되도록 등록|`name:string`, `page:object`|`void`|
+|구분|설명|인자|리턴|업데이트 시점|
+|---|---|---|---|---|
+|setPage|페이지 이름`(name)`과 정보`(page)`를 `Router`인스턴스로 만들어 `Router`에 등록|`pageName:string`, `pathName:string` `page:object`|`void`|v0.2.0|
+|setSubPage|하위 페이지 이름`(name)`과 정보`(page)`를 `Router`인스턴스로 만들어 `Router`에 등록|`pageName:string`, `pathName:string` `page:object`|`void`|v0.2.0|
+|setModulePage|모듈 페이지 이름과 정보를 `Router`인스턴스로 만들어 `Router`에 보호되도록 등록|`pageName:string`, `pathName:string` `page:object`|`void`|v0.1.1|
+|loadModules|부모페이지에서 module속성값으로 사용하고 자동으로 매칭되는 서브페이지를 등록|-|`LoadModules`|v0.2.0|
+
+#### Auto running methods
+
+> 페이지 설정 js 파일 내에서 template외 세가지 특수 속성입니다.
+
+1. style : style을 등록하면 렌더링 되는 로컬만 스타일 스코프를 할 수 있습니다.
+2. created : 렌더링 되기 전 등록단계에 실행되고 한 번만 실행이 됩니다.
+3. mounted : 렌더링 후 실행이 되며 페이지가 넘어갈 때마다 계속해서 실행됩니다.
+
+**예제**
+
+```javascript
+export default {
+    created(){
+        // 전체 렌더링 시 한 번만 실행
+        console.log('test')
+    },
+    mounted(){
+        // 현재 페이지에 올 때마다 실행
+        console.log(2);
+    },
+    template(){
+        return `
+        <div>
+            <span class="h3">test</span>
+            <p>
+                Lorem ipsum dolor sit amet, consectetur adipisicing elit. Quas error laborum ullam, explicabo vitae accusantium alias ratione aperiam natus cupiditate fuga quaerat recusandae facere harum reiciendis quod iste odio non?
+            </p>
+        </div>
+        `
+    }
+}
+```
 
 ## 버그, 제안 등
 

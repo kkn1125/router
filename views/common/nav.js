@@ -11,7 +11,7 @@ export default {
     genList(){
         return [...this.menulist()].map(li=>`
         <li>
-            <a class="nav-link" href="#${li}">${li.toUpperCase()}</a>
+            <a class="nav-link" href="${Router[li].path}">${Router[li].name.toUpperCase()}</a>
         </li>
         `).join('');
     },

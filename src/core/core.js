@@ -1,7 +1,15 @@
+/**!
+ * router v0.2.0 (https://github.com/kkn1125/router)
+ * Copyright 2021 Authors (https://github.com/kkn1125/router/graphs/contributors) kkn1125
+ * Licensed under MIT (https://github.com/kkn1125/router/blob/main/LICENSE)
+ */
+
 'use strict';
 const App = {
+    name: 'Router.js',
     brand: 'Router',
-    version: '0.1.1'
+    version: '0.2.0',
+    author: 'kimson',
 }
 
 const base404 = {
@@ -81,37 +89,49 @@ Object.defineProperty(Object.prototype, 'convert', {
 if(!Object.prototype.hasOwnProperty('removeSign'))
 Object.defineProperty(Object.prototype, 'removeSign', {
     value: function (){
-        return this.replace(/[\.\-\_]+/gm,'');
+        return this.replace(/[\.\-\_]+/gm,' ');
     },
     enumerable: true,
     configurable: true
 });
 
-function Router(name, path, page){
-    this.name = name;
-    this.path = path;
-    this.page = page;
+Object.convertRouterPath = function(str){ // 0.2.0
+    return str.replace(/[\.\_\s\-]+/gm, '-');
 }
 
-// 0.1.1
-Router.__proto__.setPage = function(name, page){
+function Router(name, path, page){
+    this.name = name; // 0.2.0;
+    this.path = path.replace(/[\s\_\-\.]+/gm, '-');
+    this.page = page;
+    this.convertedName = name.replace(/[\s\_\-\.]+/gm, ' '); // 0.2.0
+}
+
+// 0.2.0
+Router.__proto__.setPage = function(propName, hashPath, page){
     page.created?.call(page);
-    Router[name] = new Router(name, `#${name}`, page);
-    if(Router[name].page.module){ // 서브페이지 모듈 부모 자동 등록
-        const modules = Object.keys(Router[name].page.module);
+    hashPath = Object.convertRouterPath(hashPath);
+    Router[hashPath] = new Router(propName, `#${hashPath}`, page);
+    Router[hashPath].page.origin = Router[hashPath]; // 0.2.0
+
+    Router.loadModules.call(hashPath, false);
+
+    if(Router[hashPath].page.module){ // 서브페이지 모듈 부모 자동 등록
+        const modules = Object.keys(Router[hashPath].page.module);
         if(modules.length>0){
             modules.forEach(key=>{
-                Router[name].page.module[key].page.parent = Router[name];
+                Router[hashPath].page.module[key].page.parent = Router[hashPath];
             });
         }
     }
 }
 
-// 0.1.1
-Router.__proto__.setSubPage = function(name, page){
+// 0.2.0
+Router.__proto__.setSubPage = function(propName, hashPath, page){
     page.created?.call(page);
-    Router[name] = new Router(name, `#${name}`, page);
-    return Router[name];
+    hashPath = Object.convertRouterPath(hashPath);
+    Router[hashPath] = new Router(propName, `#${hashPath}`, page);
+    Router[hashPath].page.origin = Router[hashPath]; // 0.2.0
+    return Router[hashPath];
 }
 
 Router.__proto__.setModulePage = function(name, page){
@@ -119,7 +139,19 @@ Router.__proto__.setModulePage = function(name, page){
     Router.__proto__[name] = new Router(name, '', page);
 }
 
-Router.setPage('404', base404);
+Router.__proto__.loadModules = function (sep = true){
+    let root = this;
+    function LoadModules(){
+        Object.keys(Router).filter(name=>name.match(root)).map(name=>{
+            let temp = sep?name:name.replace(/[\s\-\_\.]+/gm, '_');
+            this['$'+temp] = Router[name];
+        });
+    }
+    
+    Router[this].page.module = new LoadModules();
+}
+
+Router.setPage('404', '404', base404);
 
 const Route = (function (){
     function Controller(){
@@ -176,7 +208,7 @@ const Route = (function (){
         }
 
         this.setHistory = function (href){
-            current = href.removeSign();
+            current = href;//.removeSign();
             this.fakeLocation(current);
             this.renderView(current);
         }
@@ -186,7 +218,7 @@ const Route = (function (){
         }
 
         this.renderView = function (href){
-            const name = href.slice(1).removeSign();
+            const name = href.slice(1);//.removeSign();
             views.renderView(name);
         }
     }
@@ -205,7 +237,7 @@ const Route = (function (){
 
         this.renderView = function(name){
             this.clearView();
-            app.insertAdjacentHTML('beforeend', 
+            app.insertAdjacentHTML('beforeend',
                 parts
                     .Layout
                     .template()
@@ -259,8 +291,8 @@ const Layout = {
     setPage: function(page, router){
         this.convertedView = [];
         if(!page) page = router['404'];
-        Route[page.name] = page;
-        this.getPage = page.name;
+        Route[page.path] = page;
+        this.getPage = page.path.slice(1); // 0.2.0
         return this;
     },
     getPage: null,
@@ -270,6 +302,7 @@ const Layout = {
     },
     render(){
         const rootPage = Router[this.getPage].page;
+        
         rootPage.mounted?.call(rootPage);
 
         return this.convertedView.join('');
