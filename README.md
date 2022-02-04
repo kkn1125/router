@@ -355,7 +355,7 @@ v0.2.0이후로 `setPage`로 페이지 등록 시점에 설정한 `hashPath`를 
 
 <del>서브페이지 모듈 부모 페이지처럼 `module`속성를 가질 수 있습니다. `module`속성을 사용한 이유는 한 페이지 내에서 사이드 바나 순차적으로 타고 들어가는 형태의 페이지가 있을 때 쉽고 오고 갈 수 있도록 하기 위함입니다.</del>
 
-> \* v0.2.0부터는 module에 등록했던 파일들을 입력하지 않고 Router.loadModules를 속성값으로 주면 자동으로 
+> \* v0.2.0부터는 module에 등록했던 파일들을 입력하지 않고 Router.loadModules를 속성값으로 주면 자동으로 매칭하여 등록합니다.
 
 ```javascript
 // home.sub.js
