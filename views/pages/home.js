@@ -8,14 +8,7 @@ Router.setSubPage('homesub-test', 'home.sub', HomeSub);
 
 export default {
     title: 'home',
-    created(){
-        console.log('test')
-    },
-    mounted(){
-        console.log(2);
-    },
     template: function() {
-        console.log(this.module)
         return `
         <div class="main">
             <main>
