@@ -4,6 +4,10 @@
 
 ## update list
 
+### v0.2.1
+
+1. 렌더링 두 번 되는 버그 수정
+
 ### v0.2.0
 
 1. setPage, setSubPage 메서드 수정 (이전 버전 호환 x)
@@ -89,6 +93,9 @@ export default {
 ### CDN
 
 ```javascript
+/** v0.2.1 */
+import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v021/src/core/core.js'
+
 /** v0.2.0 */
 import core from 'https://cdn.jsdelivr.net/gh/kkn1125/router@v020/src/core/core.js'
 

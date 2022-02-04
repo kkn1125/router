@@ -1,4 +1,5 @@
 'use strict';
+// import {Router} from '../../src/core/coreBus.js'
 import {Router} from '../../src/core/core.js'
 
 import aboutsub from './about.sub.js'

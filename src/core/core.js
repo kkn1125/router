@@ -1,5 +1,5 @@
 /**!
- * router v0.2.0 (https://github.com/kkn1125/router)
+ * router v0.2.1 (https://github.com/kkn1125/router)
  * Copyright 2021 Authors (https://github.com/kkn1125/router/graphs/contributors) kkn1125
  * Licensed under MIT (https://github.com/kkn1125/router/blob/main/LICENSE)
  */
@@ -8,7 +8,7 @@
 const App = {
     name: 'Router.js',
     brand: 'Router',
-    version: '0.2.0',
+    version: '0.2.1',
     author: 'kimson',
 }
 
@@ -73,7 +73,7 @@ Object.defineProperty(Object.prototype, 'convert', {
                 if(b=='page') b = root.getPage;
                 if(Router[b]) {
                     root[b] = Router[b].page.template().trim();
-                    return Router[b].page.template().trim();
+                    return root[b]; // v0.2.1 버그 수정 (중복)
                 } else {
                     root[a] = a;
                     return a;
@@ -95,23 +95,23 @@ Object.defineProperty(Object.prototype, 'removeSign', {
     configurable: true
 });
 
-Object.convertRouterPath = function(str){ // 0.2.0
+Object.convertRouterPath = function(str){ // 0.2.1
     return str.replace(/[\.\_\s\-]+/gm, '-');
 }
 
 function Router(name, path, page){
-    this.name = name; // 0.2.0;
+    this.name = name; // 0.2.1;
     this.path = path.replace(/[\s\_\-\.]+/gm, '-');
     this.page = page;
-    this.convertedName = name.replace(/[\s\_\-\.]+/gm, ' '); // 0.2.0
+    this.convertedName = name.replace(/[\s\_\-\.]+/gm, ' '); // 0.2.1
 }
 
-// 0.2.0
+// 0.2.1
 Router.__proto__.setPage = function(propName, hashPath, page){
     page.created?.call(page);
     hashPath = Object.convertRouterPath(hashPath);
     Router[hashPath] = new Router(propName, `#${hashPath}`, page);
-    Router[hashPath].page.origin = Router[hashPath]; // 0.2.0
+    Router[hashPath].page.origin = Router[hashPath]; // 0.2.1
 
     Router.loadModules.call(hashPath, false);
 
@@ -125,12 +125,12 @@ Router.__proto__.setPage = function(propName, hashPath, page){
     }
 }
 
-// 0.2.0
+// 0.2.1
 Router.__proto__.setSubPage = function(propName, hashPath, page){
     page.created?.call(page);
     hashPath = Object.convertRouterPath(hashPath);
     Router[hashPath] = new Router(propName, `#${hashPath}`, page);
-    Router[hashPath].page.origin = Router[hashPath]; // 0.2.0
+    Router[hashPath].page.origin = Router[hashPath]; // 0.2.1
     return Router[hashPath];
 }
 
@@ -158,7 +158,7 @@ const Route = (function (){
         let models = null;
         this.init = function (model){
             models = model;
-
+            
             window.addEventListener('click', this.handleAnchors);
             window.addEventListener('popstate', this.handleState);
         }
@@ -237,6 +237,7 @@ const Route = (function (){
 
         this.renderView = function(name){
             this.clearView();
+
             app.insertAdjacentHTML('beforeend',
                 parts
                     .Layout
@@ -292,7 +293,7 @@ const Layout = {
         this.convertedView = [];
         if(!page) page = router['404'];
         Route[page.path] = page;
-        this.getPage = page.path.slice(1); // 0.2.0
+        this.getPage = page.path.slice(1); // 0.2.1
         return this;
     },
     getPage: null,
